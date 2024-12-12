@@ -74,3 +74,33 @@ export const loginAdmin = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error logging in user", error });
   }
 };
+
+export const getAdminProfile = async (req: Request, res: Response) => {
+  try {
+
+    const adminId = (req as any).user.id;
+
+    const admin = await Admin.findById(adminId)
+      .select('-password');
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    return res.json({
+      _id: admin._id,
+      email: admin.email,
+      username: admin.username,
+      admin: admin.admin,
+      establishments: admin.establishments,
+      staff: admin.staff,
+      colors: admin.colors
+    });
+
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Error fetching admin profile",
+      error: error.message
+    });
+  }
+};

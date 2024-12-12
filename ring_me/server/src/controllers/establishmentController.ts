@@ -26,7 +26,7 @@ export const createEstablishment = async (req: Request, res: Response) => {
       buttons: [],
       menu: { link: "", file: "" },
     });
-    await newEstablishment.save();
+
     admin.establishments.push(newEstablishment);
     await admin.save();
 
