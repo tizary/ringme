@@ -2,6 +2,7 @@ import express from "express";
 import {
   createEstablishment,
   deleteEstablishment,
+  getEstablishmentById,
 } from "../controllers/establishmentController";
 import { authenticateToken } from "../middlewares/authMiddleware";
 
@@ -13,5 +14,6 @@ establishmentRouter.delete(
   authenticateToken,
   deleteEstablishment
 );
+establishmentRouter.get("/get/:id",  authenticateToken, getEstablishmentById);
 
 export default establishmentRouter;

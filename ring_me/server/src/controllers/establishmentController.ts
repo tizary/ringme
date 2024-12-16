@@ -63,3 +63,24 @@ export const deleteEstablishment = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error deleting establishment", error });
   }
 };
+
+export const getEstablishmentById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const admin = await Admin.findOne(
+      { "establishments._id": id },
+      { "establishments.$": 1 }  
+    );
+
+    if (!admin || !admin.establishments || admin.establishments.length === 0) {
+      return res.status(404).json({ message: "Establishment not found" });
+    }
+
+    const establishment = admin.establishments[0];
+
+    res.status(200).json({ establishment });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching establishment", error });
+  }
+};
