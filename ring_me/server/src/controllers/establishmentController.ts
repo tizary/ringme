@@ -11,6 +11,7 @@ export const createEstablishment = async (req: Request, res: Response) => {
       description,
       instagram_link,
       tiktok_link,
+      image,
     } = req.body;
     console.log("adminId", adminId);
 
@@ -22,6 +23,7 @@ export const createEstablishment = async (req: Request, res: Response) => {
       description,
       instagram_link,
       tiktok_link,
+      image,
       tables: [],
       buttons: [],
       menu: { link: "", file: "" },
@@ -70,7 +72,7 @@ export const getEstablishmentById = async (req: Request, res: Response) => {
 
     const admin = await Admin.findOne(
       { "establishments._id": id },
-      { "establishments.$": 1 }  
+      { "establishments.$": 1 }
     );
 
     if (!admin || !admin.establishments || admin.establishments.length === 0) {

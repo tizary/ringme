@@ -5,6 +5,7 @@ const establishmentSchema = new mongoose.Schema({
   description: { type: String },
   instagram_link: { type: String },
   tiktok_link: { type: String },
+  image: {type: String},
   tables: [
     {
       table_number: { type: String },

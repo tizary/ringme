@@ -18,6 +18,7 @@ const adminSchema = new mongoose.Schema({
       description: String,
       instagram_link: String,
       tiktok_link: String,
+      image: String,
       tables: [
         {
           establishment_id: String,
