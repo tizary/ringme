@@ -20,6 +20,7 @@ export const createButton = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Establishment not found" });
 
     const newButton = new Button({
+      establishment_id,
       button_name,
       button_message,
       button_color,

@@ -28,6 +28,7 @@ const adminSchema = new mongoose.Schema({
       ],
       buttons: [
         {
+          establishment_id: String,
           button_name: String,
           button_message: String,
           button_color: String,
