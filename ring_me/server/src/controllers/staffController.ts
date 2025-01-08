@@ -119,7 +119,7 @@ export const getStaff = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Admin not found" });
     }
 
-    res.status(200).json({ staff: admin.staff });
+    res.status(200).json(admin.staff);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving staff", error });
   }
