@@ -109,3 +109,18 @@ export const selectTables = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error updating staff tables", error });
   }
 };
+
+export const getStaff = async (req: Request, res: Response) => {
+  try {
+    const { adminId } = req.params;
+
+    const admin = await Admin.findById(adminId).populate('staff');
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.status(200).json({ staff: admin.staff });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving staff", error });
+  }
+};
