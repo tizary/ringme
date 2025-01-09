@@ -86,3 +86,35 @@ export const getEstablishmentById = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching establishment", error });
   }
 };
+
+export const editEstablishment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const {
+      establishment_name,
+      description,
+      instagram_link,
+      tiktok_link,
+    } = req.body;
+
+    const result = await Admin.updateOne(
+      { "establishments._id": id },
+      {
+        $set: {
+          "establishments.$.establishment_name": establishment_name,
+          "establishments.$.description": description,
+          "establishments.$.instagram_link": instagram_link,
+          "establishments.$.tiktok_link": tiktok_link,
+        },
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "Establishment not found or no changes made" });
+    }
+
+    res.status(200).json({ message: "Establishment updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating establishment", error });
+  }
+};

@@ -89,13 +89,13 @@ export const selectTables = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No tables data provided" });
     }
 
-    if (!Array.isArray(JSON.parse(tables))) {
-      return res.status(400).json({ message: "Tables data must be an array" });
-    }
+    // if (!Array.isArray(JSON.parse(tables))) {
+    //   return res.status(400).json({ message: "Tables data must be an array" });
+    // }
 
     const result = await Admin.updateOne(
       { "staff._id": id },
-      { $set: { "staff.$.tables": JSON.parse(tables) } }
+      { $set: { "staff.$.tables": tables } }
     );
 
     if (result.modifiedCount === 0) {
@@ -106,6 +106,7 @@ export const selectTables = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Staff tables updated successfully" });
   } catch (error) {
+    console.log(error) 
     res.status(500).json({ message: "Error updating staff tables", error });
   }
 };
