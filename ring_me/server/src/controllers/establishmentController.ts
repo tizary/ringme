@@ -11,13 +11,15 @@ export const createEstablishment = async (req: Request, res: Response) => {
       description,
       instagram_link,
       tiktok_link,
-      image,
+      image_str,
     } = req.body;
     console.log("adminId", adminId);
 
     const admin = await Admin.findById(adminId);
     if (!admin) return res.status(404).json({ message: "Admin not found" });
 
+    const image = image_str ? Buffer.from(image_str, 'base64') : null;
+  
     const newEstablishment = new Establishment({
       establishment_name,
       description,
@@ -81,7 +83,13 @@ export const getEstablishmentById = async (req: Request, res: Response) => {
 
     const establishment = admin.establishments[0];
 
-    res.status(200).json({ establishment });
+    let base64Image = '';
+    if (establishment.image) {
+      base64Image = establishment.image.toString('base64');
+    }
+    const establishmentWithBase64 = { ...establishment.toObject(), image: base64Image };
+
+    res.status(200).json({ establishment: establishmentWithBase64 });
   } catch (error) {
     res.status(500).json({ message: "Error fetching establishment", error });
   }
