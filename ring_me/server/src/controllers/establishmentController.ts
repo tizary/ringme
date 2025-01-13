@@ -103,7 +103,10 @@ export const editEstablishment = async (req: Request, res: Response) => {
       description,
       instagram_link,
       tiktok_link,
+      image_str
     } = req.body;
+
+    const newImage = image_str ? Buffer.from(image_str, 'base64') : null;
 
     const result = await Admin.updateOne(
       { "establishments._id": id },
@@ -113,6 +116,7 @@ export const editEstablishment = async (req: Request, res: Response) => {
           "establishments.$.description": description,
           "establishments.$.instagram_link": instagram_link,
           "establishments.$.tiktok_link": tiktok_link,
+          "establishments.$.image": newImage,
         },
       }
     );
