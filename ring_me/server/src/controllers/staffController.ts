@@ -4,10 +4,12 @@ import { Staff } from "../models/Staff";
 
 export const createStaff = async (req: Request, res: Response) => {
   try {
-    const { adminId, email, username, password, tables } = req.body;
+    const { adminId, email, username, password, tables, image_str } = req.body;
 
     const admin = await Admin.findById(adminId);
     if (!admin) return res.status(404).json({ message: "Admin not found" });
+
+    const image = image_str ? Buffer.from(image_str, 'base64') : null;
 
     const newStaff = new Staff({
       email,
@@ -16,6 +18,7 @@ export const createStaff = async (req: Request, res: Response) => {
       tables: tables || [],
       calls: [],
       admin: false,
+      image,
     });
 
     admin.staff.push(newStaff);
@@ -54,13 +57,15 @@ export const deleteStaff = async (req: Request, res: Response) => {
 export const editStaff = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { email, username, password } = req.body;
+    const { email, username, password, image_str } = req.body;
 
+    const image = image_str ? Buffer.from(image_str, 'base64') : null;
     const updateFields: any = {};
 
     if (email) updateFields["staff.$.email"] = email;
     if (username) updateFields["staff.$.username"] = username;
     if (password) updateFields["staff.$.password"] = password;
+    if (image_str) updateFields["staff.$.image"] = image;
 
     if (Object.keys(updateFields).length === 0) {
       return res.status(400).json({ message: "No valid fields to update" });
@@ -120,7 +125,15 @@ export const getStaff = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Admin not found" });
     }
 
-    res.status(200).json(admin.staff);
+    const staffWithBase64Images = admin.staff.map((staffMember) => {
+      let base64Image = '';
+      if (staffMember.image) {
+        base64Image = staffMember.image.toString('base64');
+      }
+      return { ...staffMember.toObject(), image: base64Image };
+    });
+
+    res.status(200).json(staffWithBase64Images);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving staff", error });
   }

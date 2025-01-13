@@ -47,6 +47,7 @@ const adminSchema = new mongoose.Schema({
       email: String,
       username: String,
       password: String,
+      image: Buffer,
       tables: [
         {
           establishment_id: String,

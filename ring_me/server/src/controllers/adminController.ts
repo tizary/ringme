@@ -90,13 +90,16 @@ export const getAdminProfile = async (req: Request, res: Response) => {
       ...est.toObject(),
       image: est.image ? est.image.toString('base64') : ''
     }));
+    const staffWithBase64Image = admin.staff.map(est => ({
+      ...est.toObject(), image: est.image ? est.image.toString('base64') : ''
+    }))
     return res.json({
       _id: admin._id,
       email: admin.email,
       username: admin.username,
       admin: admin.admin,
       establishments: establishmentsWithBase64Image,
-      staff: admin.staff,
+      staff: staffWithBase64Image,
       colors: admin.colors
     });
 
