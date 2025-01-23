@@ -37,7 +37,7 @@ const adminSchema = new mongoose.Schema({
       menu: {
         establishment_id: String,
         link: String,
-        file: String,
+        file: String
       },
     },
   ],

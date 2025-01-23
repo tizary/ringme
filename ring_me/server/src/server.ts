@@ -11,9 +11,17 @@ import menuRoutes from "./routes/menuRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import staffRoutes from "./routes/staffRoutes";
 import { errorHandler } from "./middlewares/errorMiddleware";
+import fs from 'fs';
+import path from "path";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+if (!fs.existsSync('./uploads')){
+    fs.mkdirSync('./uploads');
+}
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(
   cors({
@@ -32,6 +40,7 @@ app.use("/api/establishments", establishmentRoutes);
 app.use("/api/tables", tableRoutes);
 app.use("/api/buttons", buttonRoutes);
 app.use("/api/menu", menuRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(errorHandler);
 

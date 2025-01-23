@@ -86,22 +86,11 @@ export const getAdminProfile = async (req: Request, res: Response) => {
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
-    const establishmentsWithBase64Image = admin.establishments.map(est => ({
-      ...est.toObject(),
-      image: est.image ? est.image.toString('base64') : ''
+    const establishments = admin.establishments.map(est => ({
+      _id: est._id,
+      establishment_name: est.establishment_name,
     }));
-    const staffWithBase64Image = admin.staff.map(est => ({
-      ...est.toObject(), image: est.image ? est.image.toString('base64') : ''
-    }))
-    return res.json({
-      _id: admin._id,
-      email: admin.email,
-      username: admin.username,
-      admin: admin.admin,
-      establishments: establishmentsWithBase64Image,
-      staff: staffWithBase64Image,
-      colors: admin.colors
-    });
+    return res.json(establishments);
 
   } catch (error: any) {
     res.status(500).json({
