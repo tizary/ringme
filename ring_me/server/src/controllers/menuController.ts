@@ -146,10 +146,6 @@ export const editMenu = async (req: Request, res: Response) => {
     const { link } = req.body;
     const newFile = req.file;
 
-     console.log("Request Body:", req.body);
-    console.log("Uploaded File:", req.file);
-    console.log("Extracted link:", link);
-
     const admin = await Admin.findOne({
       "establishments._id": id,
     });
