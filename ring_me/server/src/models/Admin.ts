@@ -5,6 +5,8 @@ const adminSchema = new mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true },
   admin: { type: Boolean },
+  emailConfirmed: { type: Boolean, default: false },
+  emailToken: { type: String },
   colors: [
     {
       id_color: String,
@@ -48,6 +50,7 @@ const adminSchema = new mongoose.Schema({
       username: String,
       password: String,
       image: Buffer,
+      emailConfirmed: { type: Boolean, default: false },
       tables: [
         {
           establishment_id: String,
