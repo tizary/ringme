@@ -2,20 +2,8 @@ import { Request, Response } from "express";
 import { Admin } from "../models/Admin";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import crypto from "crypto";
-import dotenv from "dotenv";
-dotenv.config();
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.yandex.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user:  process.env.EMAIL_USER,
-    pass:  process.env.EMAIL_PASSWORD,
-  },
-});
+import transporter from "../emailService";
 
 export const createAdmin = async (req: Request, res: Response) => {
   const { email, password, username } = req.body;

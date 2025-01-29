@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { Admin } from "../models/Admin";
 import { Staff } from "../models/Staff";
+import crypto from "crypto";
+import transporter from "../emailService";
+import { error, log } from "console";
 
 export const createStaff = async (req: Request, res: Response) => {
   try {
@@ -9,16 +12,32 @@ export const createStaff = async (req: Request, res: Response) => {
     const admin = await Admin.findById(adminId);
     if (!admin) return res.status(404).json({ message: "Admin not found" });
 
+    // Генерация токена подтверждения
+    const emailToken = crypto.randomBytes(32).toString("hex");
+
     const image = image_str ? Buffer.from(image_str, 'base64') : null;
 
-    const newStaff = new Staff({
+
+    const newStaff = {
       email,
       username,
       password,
+      emailConfirmed: false,
+      emailToken,
       tables: tables || [],
       calls: [],
       admin: false,
       image,
+    };
+
+    const confirmationUrl = `${process.env.SERVER_URL}/api/staffs/confirm-email?token=${emailToken}`;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Подтверждение электронной почты",
+      html: `<p>Пожалуйста, подтвердите вашу электронную почту, перейдя по ссылке:</p>
+             <a href="${confirmationUrl}">${confirmationUrl}</a>`,
     });
 
     admin.staff.push(newStaff);
@@ -30,6 +49,33 @@ export const createStaff = async (req: Request, res: Response) => {
       .json({ message: "Staff created successfully", staff: newStaff });
   } catch (error) {
     res.status(500).json({ message: "Error creating staff", error });
+  }
+};
+
+export const confirmStaffEmail = async (req: Request, res: Response) => {
+  const { token } = req.query;
+
+  try {
+    const admin = await Admin.findOne({ "staff.emailToken": token });
+
+    if (!admin) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    const staffMember = admin.staff.find((staff) => staff.emailToken === token);
+
+    if (!staffMember) {
+      return res.status(400).json({ message: "Invalid or expired token", error: error });
+    }
+
+    staffMember.emailConfirmed = true;
+    staffMember.emailToken = undefined;
+
+    await admin.save();
+
+    res.status(200).json({ message: "Staff email confirmed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error confirming staff email", error });
   }
 };
 
@@ -111,7 +157,7 @@ export const selectTables = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Staff tables updated successfully" });
   } catch (error) {
-    console.log(error) 
+    console.log(error)
     res.status(500).json({ message: "Error updating staff tables", error });
   }
 };

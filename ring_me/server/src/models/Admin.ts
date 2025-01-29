@@ -51,6 +51,7 @@ const adminSchema = new mongoose.Schema({
       password: String,
       image: Buffer,
       emailConfirmed: { type: Boolean, default: false },
+      emailToken: { type: String },
       tables: [
         {
           establishment_id: String,
