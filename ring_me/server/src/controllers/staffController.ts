@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { Admin } from "../models/Admin";
-import { Staff } from "../models/Staff";
 import crypto from "crypto";
 import transporter from "../emailService";
-import { error, log } from "console";
 
 export const createStaff = async (req: Request, res: Response) => {
   try {
@@ -12,7 +10,6 @@ export const createStaff = async (req: Request, res: Response) => {
     const admin = await Admin.findById(adminId);
     if (!admin) return res.status(404).json({ message: "Admin not found" });
 
-    // Генерация токена подтверждения
     const emailToken = crypto.randomBytes(32).toString("hex");
 
     const image = image_str ? Buffer.from(image_str, 'base64') : null;
@@ -65,7 +62,7 @@ export const confirmStaffEmail = async (req: Request, res: Response) => {
     const staffMember = admin.staff.find((staff) => staff.emailToken === token);
 
     if (!staffMember) {
-      return res.status(400).json({ message: "Invalid or expired token", error: error });
+      return res.status(400).json({ message: "Invalid or expired token"});
     }
 
     staffMember.emailConfirmed = true;
@@ -182,5 +179,41 @@ export const getStaff = async (req: Request, res: Response) => {
     res.status(200).json(staffWithBase64Images);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving staff", error });
+  }
+};
+
+export const getStaffById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+const admin = await Admin.findOne({
+      "staff": {
+        $elemMatch: {
+          "_id": id
+        }
+      }
+    });
+  if (!admin) {
+      return res.status(404).json({ message: "Staff member not found" });
+    }
+
+    const staffMember = admin.staff.find((staff) => staff._id.toString() === id);
+
+    if (!staffMember) {
+      return res.status(404).json({ message: "Staff member not found" });
+    }
+
+    res.status(200).json({ adminId: admin._id, ...staffMember.toObject()});
+
+    // let base64Image = "";
+    // if (staffMember.image) {
+    //   base64Image = staffMember.image.toString("base64");
+    // }
+
+    // res.status(200).json({ ...staffMember.toObject(), image: base64Image });
+
+  } catch (error) {
+    console.error("Error retrieving staff member:", error);
+    res.status(500).json({ message: "Error retrieving staff member", error });
   }
 };
