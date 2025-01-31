@@ -55,7 +55,7 @@ const adminSchema = new mongoose.Schema({
       tables: [
         {
           establishment_id: String,
-          establishment_name: String,
+          table_id: String,
           table_number: String,
           enabled: Boolean,
         },
